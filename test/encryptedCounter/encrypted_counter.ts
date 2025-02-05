@@ -12,7 +12,9 @@ describe('EncryptedCounter1', function () {
     console.log('Create fhevmjs instance');
     this.instances = await createInstances(this.signers);
     await initGateway();
+  });
 
+  beforeEach(async function () {
     const CounterFactory = await ethers.getContractFactory('EncryptedCounter3');
     const deployTx = await CounterFactory.getDeployTransaction();
     const estimatedGas = await ethers.provider.estimateGas({ data: deployTx.data });
