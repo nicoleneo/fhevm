@@ -3,7 +3,6 @@ pragma solidity ^0.8.24;
 
 import "../lib/TFHE.sol";
 import "./FHEVMConfig.sol";
-import "./GatewayConfig.sol";
 import "../gateway/GatewayCaller.sol";
 
 /// @title EncryptedCounter3
@@ -16,9 +15,22 @@ contract EncryptedCounter3 is GatewayCaller {
     uint8 public decryptedCounter;
     euint8 internal immutable CONST_ONE;
 
-    constructor() {
-        TFHE.setFHEVM(FHEVMConfig.defaultConfig());
-        Gateway.setGateway(GatewayConfig.defaultGatewayContract());
+    constructor(
+        address ACLAddress,
+        address TFHEExecutorAddress,
+        address FHEPaymentAddress,
+        address KMSVerifierAddress,
+        address GatewayAddress
+    ) {
+        TFHE.setFHEVM(
+            FHEVMConfigStruct({
+                ACLAddress: ACLAddress,
+                TFHEExecutorAddress: TFHEExecutorAddress,
+                FHEPaymentAddress: FHEPaymentAddress,
+                KMSVerifierAddress: KMSVerifierAddress
+            })
+        );
+        Gateway.setGateway(GatewayAddress);
         // Initialize counter with an encrypted zero value
         counter = TFHE.asEuint8(0);
         TFHE.allowThis(counter);

@@ -1,9 +1,12 @@
 import { expect } from 'chai';
+import 'dotenv/config';
 import { ethers, network } from 'hardhat';
 
 import { awaitAllDecryptionResults, initGateway } from '../asyncDecrypt';
 import { createInstances } from '../instance';
 import { getSigners, initSigners } from '../signers';
+
+// import .env for addresses
 
 describe('EncryptedCounter1', function () {
   before(async function () {
@@ -16,12 +19,15 @@ describe('EncryptedCounter1', function () {
 
   beforeEach(async function () {
     const CounterFactory = await ethers.getContractFactory('EncryptedCounter3');
-    const deployTx = await CounterFactory.getDeployTransaction();
-    const estimatedGas = await ethers.provider.estimateGas({ data: deployTx.data });
-    console.log(`estimated gas: ${estimatedGas}`);
 
     console.log('Deploying contract');
-    this.counterContract = await CounterFactory.connect(this.signers.alice).deploy();
+    this.counterContract = await CounterFactory.connect(this.signers.alice).deploy(
+      process.env.ACL_CONTRACT_ADDRESS,
+      process.env.EXECUTOR_CONTRACT_ADDRESS,
+      process.env.PAYMENT_CONTRACT_ADDRESS,
+      process.env.KMS_VERIFIER_CONTRACT_ADDRESS,
+      process.env.GATEWAY_CONTRACT_ADDRESS,
+    );
     await this.counterContract.waitForDeployment();
     this.contractAddress = await this.counterContract.getAddress();
     console.log('Contract deployed');
